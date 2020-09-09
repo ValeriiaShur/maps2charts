@@ -7,7 +7,7 @@ $(document).ready(function () {
 
   const margin = { top: 30, right: 50, bottom: 100, left: 50 };
   const width = 750 - margin.left - margin.right;
-  const height = 350 - margin.top - margin.bottom;
+  const height = 280 - margin.top - margin.bottom;
   // let animation;
 
   ToolTips.Init("body");
@@ -171,9 +171,9 @@ $(document).ready(function () {
           (Math.sqrt(d.properties.value) / Math.PI) * 5
         );
         return cPaths[i];
-      });
-    // add ToolTips:
-    /* .on("mouseenter", function (d) {
+      })
+      // add ToolTips:
+      .on("mouseenter", function (d) {
         const msg = `${d.properties.value}`; // ${d.properties.name}:
         ToolTips.Show(msg);
       })
@@ -182,7 +182,7 @@ $(document).ready(function () {
       })
       .on("mouseout", function () {
         ToolTips.Hide();
-      }) */
+      });
 
     // create labels:
     const labelLayer = svg.append("g").attr("id", "labelLayer");
