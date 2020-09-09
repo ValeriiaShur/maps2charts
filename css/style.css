@@ -59,10 +59,10 @@ body {
   overflow: hidden;
 }
 
-.svg-content-responsive {
+/* .svg-content-responsive {
   display: inline-block;
   position: absolute;
-}
+} */
 
 /*added by BK for propPointMap:*/
 .mapSVG {

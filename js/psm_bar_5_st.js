@@ -26,7 +26,7 @@ $(document).ready(function () {
     /* .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom) */
     //responsive SVG needs these 2 attributes and no width and height attr
-    .attr("preserveAspectRatio", "xMinYMin meet")
+    /* .attr("preserveAspectRatio", "xMinYMin meet") */
     .attr(
       "viewBox",
       `0 0 ` +
@@ -36,9 +36,9 @@ $(document).ready(function () {
     )
     .attr("class", "mapSVG")
     .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-    //class to make it responsive
-    .classed("svg-content-responsive", true);
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  //class to make it responsive
+  /* .classed("svg-content-responsive", true); */
 
   // asynchronously load geojson:
   async function drawMap() {
