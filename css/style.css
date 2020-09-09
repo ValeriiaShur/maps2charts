@@ -1,0 +1,134 @@
+html {
+  height: 100%;
+  background-color: white;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  background-color: white;
+}
+
+.bg-light {
+  background-color: white !important;
+}
+
+#container {
+  height: 15%;
+  color: #4e4e4e;
+}
+
+#container > h2 {
+  font-family: "Roboto";
+  font-size: 40px;
+  font-weight: 200;
+  text-align: center;
+  padding-left: 20%;
+  padding-right: 20%;
+}
+
+#container > p {
+  font-size: 17px;
+  text-align: center;
+  padding-left: 20%;
+  padding-right: 20%;
+  font-family: "Roboto";
+}
+
+#back {
+  padding: 15px;
+  padding-left: 5px;
+  color: whitesmoke;
+  background-color: #4e4e4e;
+  float: left;
+  border: none;
+  border-radius: 3px;
+  font-size: medium;
+  margin-left: 90px;
+  cursor: pointer;
+}
+
+#map {
+  /* width: 960px;
+  height: 500px; */
+  display: block;
+  margin: 0 auto;
+  position: relative;
+  width: 50%;
+  overflow: hidden;
+}
+
+.svg-content-responsive {
+  display: inline-block;
+  position: absolute;
+}
+
+/*added by BK for propPointMap:*/
+.mapSVG {
+  background-color: rgb(255, 255, 255);
+}
+.municipality {
+  fill: rgb(255, 240, 214);
+  stroke: rgb(255, 159, 227);
+}
+.propCircle {
+  fill: rgb(255, 0, 0);
+  opacity: 0.5;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #ddd;
+  padding: 5px 12px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 2px rgba(120, 120, 120, 0.65);
+}
+
+.tooltip-text {
+  font-family: Verdana, sans-serif;
+  color: black;
+  font-size: 0.8em;
+  margin-bottom: 3px;
+}
+
+#buttons {
+  width: 100%;
+  margin: 0 auto;
+  display: block;
+  text-align: center;
+}
+
+button {
+  margin: auto;
+  padding: 10px;
+}
+
+.propChoroPoly {
+  opacity: 0;
+}
+
+.bars {
+  color: rgb(255, 0, 0);
+  opacity: 0.5;
+}
+
+#labelLayer {
+  font-family: "Roboto";
+  font-size: 40px;
+  font-weight: 350;
+}
+
+#footer {
+  height: 15%;
+  background-color: #555;
+  margin-top: 20px;
+  color: #8d99a6;
+}
+
+#footer > p {
+  text-align: center;
+  padding-top: 70px;
+}
