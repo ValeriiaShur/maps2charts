@@ -13,8 +13,8 @@ $(document).ready(function () {
 
   const mapProjection = d3
     .geoMercator()
-    .center([6.7, 52.2])
-    .scale(20000)
+    .scale(7000)
+    .center([13, 47])
     .translate([width / 2, height / 2]);
 
   const svgpath = d3.geoPath().projection(mapProjection);
@@ -39,7 +39,7 @@ $(document).ready(function () {
   async function drawMap() {
     const myTopoJson = await d3
       .json(
-        "https://raw.githubusercontent.com/ValeriiaShur/geo-data/master/nl_5_static.json"
+        "https://raw.githubusercontent.com/ValeriiaShur/geo-data/master/au_5_interpolated.json"
       )
       .catch((err) => {
         console.error(err);
@@ -47,7 +47,7 @@ $(document).ready(function () {
 
     const state_features = topojson.feature(
       myTopoJson,
-      myTopoJson.objects.nl_5_static
+      myTopoJson.objects.au_5_interpolated
     ).features;
 
     // sort the features descending based on aant_inw property
@@ -78,17 +78,14 @@ $(document).ready(function () {
         return d.properties.value;
       }),
     ];
-    const yScale = d3
-      .scaleLinear()
-      .range([height + margin.top, 0])
-      .domain(y_domain);
+    const yScale = d3.scaleLinear().range([height, 0]).domain(y_domain);
     const yAxis = d3.axisLeft().scale(yScale);
 
     // x-axis
     const x_axis_g = svg
       .append("g")
       .attr("class", "x axis")
-      .attr("transform", `translate(0,${height + margin.top})`)
+      .attr("transform", `translate(0,${height})`)
       .call(xAxis)
       .style("opacity", 0);
 
@@ -120,7 +117,6 @@ $(document).ready(function () {
 
     // create bar chart AS PATHS , but dont draw them:
     const bPaths = []; // array for the paths, for later use in KUTE animation
-    const bPathsStart = [];
     const barsLayer = svg.append("g").attr("id", "barsLayer");
     barsLayer
       .selectAll("g")
@@ -129,14 +125,13 @@ $(document).ready(function () {
       .enter()
       // for each d create a bar (as a PATH):
       .append("g") // just an empty g because we need no real svg drawing
-      .attr("class", "bars")
       .attr("d", function (d, i) {
         // make a path out of the original circles:
         bPaths[i] = SVGTag2Path.Rect(
           xScale(d.properties.id),
           yScale(d.properties.value),
           xScale.bandwidth(),
-          height + margin.top - yScale(d.properties.value)
+          height - yScale(d.properties.value)
         ); // no "return path" because we dont need them drawn!
       });
     barsLayer.remove(); // clean up
@@ -156,12 +151,6 @@ $(document).ready(function () {
         return `elem${i}`;
       })
       .attr("d", function (d, i) {
-        bPathsStart[i] = SVGTag2Path.Rect(
-          svgpath.centroid(d)[0],
-          svgpath.centroid(d)[1],
-          xScale.bandwidth() * 0.01,
-          (height - yScale(d.properties.value)) * 0.01
-        );
         // make a path out of the original circles:
         cPaths[i] = SVGTag2Path.Circle(
           svgpath.centroid(d)[0],
@@ -172,15 +161,15 @@ $(document).ready(function () {
       });
     // add ToolTips:
     /* .on("mouseenter", function (d) {
-        const msg = `${d.properties.value}`; // ${d.properties.name}:
-        ToolTips.Show(msg);
-      })
-      .on("mousemove", function (d) {
-        ToolTips.Move(d3.event);
-      })
-      .on("mouseout", function () {
-        ToolTips.Hide();
-      }) */
+          const msg = `${d.properties.value}`; // ${d.properties.name}:
+          ToolTips.Show(msg);
+        })
+        .on("mousemove", function (d) {
+          ToolTips.Move(d3.event);
+        })
+        .on("mouseout", function () {
+          ToolTips.Hide();
+        }) */
 
     // create labels:
     const labelLayer = svg.append("g").attr("id", "labelLayer");
@@ -214,7 +203,7 @@ $(document).ready(function () {
       for (let i = 0; i < cPaths.length; i++) {
         tweenIns[i] = KUTE.fromTo(
           `#elem${i}`,
-          { path: bPathsStart[i] },
+          { path: cPaths[i] },
           { path: bPaths[i] },
           { duration: 3000 }
         );
@@ -254,8 +243,8 @@ $(document).ready(function () {
         tweenIns[i].start();
       }
 
-      labelLayer.transition().duration(3000).style("opacity", 0);
       polyLayer.transition().duration(3000).style("opacity", 0);
+      labelLayer.transition().duration(3000).style("opacity", 0);
     });
   }
   drawMap();
