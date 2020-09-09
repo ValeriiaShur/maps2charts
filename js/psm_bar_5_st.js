@@ -6,16 +6,16 @@ $(document).ready(function () {
   }
 
   const margin = { top: 30, right: 50, bottom: 100, left: 50 };
-  const width = 800 - margin.left - margin.right;
-  const height = 550 - margin.top - margin.bottom;
+  const width = 750 - margin.left - margin.right;
+  const height = 400 - margin.top - margin.bottom;
   // let animation;
 
   ToolTips.Init("body");
 
   const mapProjection = d3
     .geoMercator()
-    .center([6.7, 52.1])
-    .scale(20000)
+    .center([6.7, 52.2])
+    .scale(25000)
     .translate([width / 2, height / 2]);
 
   const svgpath = d3.geoPath().projection(mapProjection);
@@ -203,7 +203,7 @@ $(document).ready(function () {
       .attr("x", 0)
       .attr("y", 0)
       .attr("class", "labelText")
-      .attr("font-size", 11)
+      .attr("font-size", 14.8)
       .style("text-anchor", "middle")
       .text(function (d) {
         return d.properties.name;
