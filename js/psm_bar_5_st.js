@@ -7,7 +7,7 @@ $(document).ready(function () {
 
   const margin = { top: 30, right: 50, bottom: 100, left: 50 };
   const width = 750 - margin.left - margin.right;
-  const height = 400 - margin.top - margin.bottom;
+  const height = 350 - margin.top - margin.bottom;
   // let animation;
 
   ToolTips.Init("body");
@@ -15,7 +15,7 @@ $(document).ready(function () {
   const mapProjection = d3
     .geoMercator()
     .center([6.7, 52.2])
-    .scale(25000)
+    .scale(20000)
     .translate([width / 2, height / 2]);
 
   const svgpath = d3.geoPath().projection(mapProjection);
