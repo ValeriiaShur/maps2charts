@@ -7,7 +7,7 @@ $(document).ready(function () {
 
   const margin = { top: 30, right: 50, bottom: 100, left: 50 };
   const width = 750 - margin.left - margin.right;
-  const height = 280 - margin.top - margin.bottom;
+  const height = 350 - margin.top - margin.bottom;
   // let animation;
 
   ToolTips.Init("body");
@@ -83,14 +83,17 @@ $(document).ready(function () {
         return d.properties.value;
       }),
     ];
-    const yScale = d3.scaleLinear().range([height, 0]).domain(y_domain);
+    const yScale = d3
+      .scaleLinear()
+      .range([height + margin.top, 0])
+      .domain(y_domain);
     const yAxis = d3.axisLeft().scale(yScale);
 
     // x-axis
     const x_axis_g = svg
       .append("g")
       .attr("class", "x axis")
-      .attr("transform", `translate(0,${height})`)
+      .attr("transform", `translate(0,${height + margin.top})`)
       .call(xAxis)
       .style("opacity", 0);
 
@@ -138,7 +141,7 @@ $(document).ready(function () {
           xScale(d.properties.id),
           yScale(d.properties.value),
           xScale.bandwidth(),
-          height - yScale(d.properties.value)
+          height + margin.top - yScale(d.properties.value)
         ); // no "return path" because we dont need them drawn!
       });
     barsLayer.remove(); // clean up
@@ -203,7 +206,7 @@ $(document).ready(function () {
       .attr("x", 0)
       .attr("y", 0)
       .attr("class", "labelText")
-      .attr("font-size", 14.8)
+      .attr("font-size", 13.5)
       .style("text-anchor", "middle")
       .text(function (d) {
         return d.properties.name;
@@ -236,6 +239,7 @@ $(document).ready(function () {
         .append("button")
         .text(text)
         .on("click", function () {
+          this.disabled = true;
           callback.call(this);
         });
     }
