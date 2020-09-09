@@ -171,9 +171,9 @@ $(document).ready(function () {
           (Math.sqrt(d.properties.value) / Math.PI) * 5
         );
         return cPaths[i];
-      })
-      // add ToolTips:
-      .on("mouseenter", function (d) {
+      });
+    // add ToolTips:
+    /* .on("mouseenter", function (d) {
         const msg = `${d.properties.value}`; // ${d.properties.name}:
         ToolTips.Show(msg);
       })
@@ -182,7 +182,7 @@ $(document).ready(function () {
       })
       .on("mouseout", function () {
         ToolTips.Hide();
-      });
+      }) */
 
     // create labels:
     const labelLayer = svg.append("g").attr("id", "labelLayer");
