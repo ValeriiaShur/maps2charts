@@ -6,7 +6,7 @@ $(document).ready(function () {
 
   const margin = { top: 30, right: 50, bottom: 100, left: 50 };
   const width = 750 - margin.left - margin.right;
-  const height = 350 - margin.top - margin.bottom;
+  const height = 280 - margin.top - margin.bottom;
   // let animation;
 
   ToolTips.Init("body");
