@@ -52,7 +52,7 @@ body {
   /* width: 960px;
   height: 500px; */
   display: block;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   position: relative;
   width: 70%;
   overflow: hidden;
@@ -117,7 +117,7 @@ button {
 
 #labelLayer {
   font-family: "Roboto";
-  font-size: 40px;
+  font-size: 80px;
   font-weight: 350;
 }
 
