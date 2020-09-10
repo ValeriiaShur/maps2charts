@@ -13,8 +13,8 @@ $(document).ready(function () {
 
   const mapProjection = d3
     .geoMercator()
-    .scale(7000)
-    .center([13, 47.2])
+    .center([6.6, 52.2])
+    .scale(20000)
     .translate([width / 2, height / 2]);
 
   const svgpath = d3.geoPath().projection(mapProjection);
@@ -39,7 +39,7 @@ $(document).ready(function () {
   async function drawMap() {
     const myTopoJson = await d3
       .json(
-        "https://raw.githubusercontent.com/ValeriiaShur/geo-data/master/au_5_interpolated.json"
+        "https://raw.githubusercontent.com/ValeriiaShur/geo-data/master/nl_8_static.json"
       )
       .catch((err) => {
         console.error(err);
@@ -47,7 +47,7 @@ $(document).ready(function () {
 
     const state_features = topojson.feature(
       myTopoJson,
-      myTopoJson.objects.au_5_interpolated
+      myTopoJson.objects.nl_8_static
     ).features;
 
     // sort the features descending based on aant_inw property
@@ -120,6 +120,7 @@ $(document).ready(function () {
 
     // create bar chart AS PATHS , but dont draw them:
     const bPaths = []; // array for the paths, for later use in KUTE animation
+    const bPathsStart = [];
     const barsLayer = svg.append("g").attr("id", "barsLayer");
     barsLayer
       .selectAll("g")
@@ -128,6 +129,7 @@ $(document).ready(function () {
       .enter()
       // for each d create a bar (as a PATH):
       .append("g") // just an empty g because we need no real svg drawing
+      .attr("class", "bars")
       .attr("d", function (d, i) {
         // make a path out of the original circles:
         bPaths[i] = SVGTag2Path.Rect(
@@ -154,6 +156,12 @@ $(document).ready(function () {
         return `elem${i}`;
       })
       .attr("d", function (d, i) {
+        bPathsStart[i] = SVGTag2Path.Rect(
+          svgpath.centroid(d)[0],
+          svgpath.centroid(d)[1],
+          xScale.bandwidth() * 0.01,
+          (height - yScale(d.properties.value)) * 0.01
+        );
         // make a path out of the original circles:
         cPaths[i] = SVGTag2Path.Circle(
           svgpath.centroid(d)[0],
@@ -164,15 +172,15 @@ $(document).ready(function () {
       });
     // add ToolTips:
     /* .on("mouseenter", function (d) {
-          const msg = `${d.properties.value}`; // ${d.properties.name}:
-          ToolTips.Show(msg);
-        })
-        .on("mousemove", function (d) {
-          ToolTips.Move(d3.event);
-        })
-        .on("mouseout", function () {
-          ToolTips.Hide();
-        }) */
+        const msg = `${d.properties.value}`; // ${d.properties.name}:
+        ToolTips.Show(msg);
+      })
+      .on("mousemove", function (d) {
+        ToolTips.Move(d3.event);
+      })
+      .on("mouseout", function () {
+        ToolTips.Hide();
+      }) */
 
     // create labels:
     const labelLayer = svg.append("g").attr("id", "labelLayer");
@@ -206,9 +214,9 @@ $(document).ready(function () {
       for (let i = 0; i < cPaths.length; i++) {
         tweenIns[i] = KUTE.fromTo(
           `#elem${i}`,
-          { path: cPaths[i] },
+          { path: bPathsStart[i] },
           { path: bPaths[i] },
-          { duration: 2000 }
+          { duration: 3000 }
         );
         tweenOuts[i] = KUTE.fromTo(
           `#elem${i}`,
@@ -246,8 +254,8 @@ $(document).ready(function () {
         tweenIns[i].start();
       }
 
-      polyLayer.transition().duration(3000).style("opacity", 0);
       labelLayer.transition().duration(3000).style("opacity", 0);
+      polyLayer.transition().duration(3000).style("opacity", 0);
     });
   }
   drawMap();

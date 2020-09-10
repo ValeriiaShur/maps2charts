@@ -13,8 +13,8 @@ $(document).ready(function () {
 
   const mapProjection = d3
     .geoMercator()
-    .scale(7000)
-    .center([13, 47.2])
+    .scale(10000)
+    .center([14.2, 48.45])
     .translate([width / 2, height / 2]);
 
   const svgpath = d3.geoPath().projection(mapProjection);
@@ -39,7 +39,7 @@ $(document).ready(function () {
   async function drawMap() {
     const myTopoJson = await d3
       .json(
-        "https://raw.githubusercontent.com/ValeriiaShur/geo-data/master/au_5_interpolated.json"
+        "https://raw.githubusercontent.com/ValeriiaShur/geo-data/master/au_8_interpolated.json"
       )
       .catch((err) => {
         console.error(err);
@@ -47,7 +47,7 @@ $(document).ready(function () {
 
     const state_features = topojson.feature(
       myTopoJson,
-      myTopoJson.objects.au_5_interpolated
+      myTopoJson.objects.au_8_interpolated
     ).features;
 
     // sort the features descending based on aant_inw property
@@ -164,15 +164,15 @@ $(document).ready(function () {
       });
     // add ToolTips:
     /* .on("mouseenter", function (d) {
-          const msg = `${d.properties.value}`; // ${d.properties.name}:
-          ToolTips.Show(msg);
-        })
-        .on("mousemove", function (d) {
-          ToolTips.Move(d3.event);
-        })
-        .on("mouseout", function () {
-          ToolTips.Hide();
-        }) */
+        const msg = `${d.properties.value}`; // ${d.properties.name}:
+        ToolTips.Show(msg);
+      })
+      .on("mousemove", function (d) {
+        ToolTips.Move(d3.event);
+      })
+      .on("mouseout", function () {
+        ToolTips.Hide();
+      }) */
 
     // create labels:
     const labelLayer = svg.append("g").attr("id", "labelLayer");
@@ -193,7 +193,7 @@ $(document).ready(function () {
       .attr("x", 0)
       .attr("y", 0)
       .attr("class", "labelText")
-      .attr("font-size", 13.5)
+      .attr("font-size", 11)
       .style("text-anchor", "middle")
       .text(function (d) {
         return d.properties.name;
@@ -208,7 +208,7 @@ $(document).ready(function () {
           `#elem${i}`,
           { path: cPaths[i] },
           { path: bPaths[i] },
-          { duration: 2000 }
+          { duration: 3000 }
         );
         tweenOuts[i] = KUTE.fromTo(
           `#elem${i}`,

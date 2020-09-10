@@ -13,8 +13,8 @@ $(document).ready(function () {
 
   const mapProjection = d3
     .geoMercator()
-    .scale(7000)
-    .center([13, 47.2])
+    .center([6.7, 52.2])
+    .scale(20000)
     .translate([width / 2, height / 2]);
 
   const svgpath = d3.geoPath().projection(mapProjection);
@@ -39,7 +39,7 @@ $(document).ready(function () {
   async function drawMap() {
     const myTopoJson = await d3
       .json(
-        "https://raw.githubusercontent.com/ValeriiaShur/geo-data/master/au_5_interpolated.json"
+        "https://raw.githubusercontent.com/ValeriiaShur/geo-data/master/nl_5_static.json"
       )
       .catch((err) => {
         console.error(err);
@@ -47,7 +47,7 @@ $(document).ready(function () {
 
     const state_features = topojson.feature(
       myTopoJson,
-      myTopoJson.objects.au_5_interpolated
+      myTopoJson.objects.nl_5_static
     ).features;
 
     // sort the features descending based on aant_inw property
@@ -105,6 +105,12 @@ $(document).ready(function () {
       .call(yAxis)
       .style("opacity", 0);
 
+    // color scale
+    var colorScale = d3
+      .scaleQuantize()
+      .domain(y_domain)
+      .range(d3.schemeBlues[5]);
+
     // create new svg paths:
     const polyLayer = svg.append("g").attr("id", "polyLayer");
     polyLayer
@@ -115,11 +121,14 @@ $(document).ready(function () {
       // for each d create a path:
       .append("path")
       .attr("id", "polygonPathElement")
-      .attr("class", "municipality")
+      .attr("class", "municipality-choropleth")
+      .attr("fill", (d) => colorScale(d.properties.value))
       .attr("d", svgpath);
+    polyLayer.remove(); // clean up
 
     // create bar chart AS PATHS , but dont draw them:
     const bPaths = []; // array for the paths, for later use in KUTE animation
+    const bPathsStart = [];
     const barsLayer = svg.append("g").attr("id", "barsLayer");
     barsLayer
       .selectAll("g")
@@ -128,8 +137,9 @@ $(document).ready(function () {
       .enter()
       // for each d create a bar (as a PATH):
       .append("g") // just an empty g because we need no real svg drawing
+      .attr("fill", (d) => colorScale(d.properties.value))
       .attr("d", function (d, i) {
-        // make a path out of the original circles:
+        // make a path out of the original polygon:
         bPaths[i] = SVGTag2Path.Rect(
           xScale(d.properties.id),
           yScale(d.properties.value),
@@ -139,40 +149,45 @@ $(document).ready(function () {
       });
     barsLayer.remove(); // clean up
 
-    // create svg circles AS PATHS :
-    const cPaths = []; // array for the paths, for later use in KUTE animation
-    const circleLayer = svg.append("g").attr("id", "circleLayer");
-    circleLayer
+    // create svg polygons of units AS PATHS :
+    const pPaths = []; // array for the paths, for later use in KUTE animation
+    const choroPoly = svg.append("g").attr("id", "choroPoly");
+    choroPoly
       .selectAll("path")
       // bind the data:
       .data(state_features)
       .enter()
       // for each d create & draw a circle:
       .append("path")
-      .attr("class", "propCircle")
+      //.attr("class", "propChoroPoly")
+      .attr("fill", (d) => colorScale(d.properties.value))
+      .style("opacity", 0.9)
+      .style("stroke", "#bebdb8")
       .attr("id", function (d, i) {
         return `elem${i}`;
       })
       .attr("d", function (d, i) {
-        // make a path out of the original circles:
-        cPaths[i] = SVGTag2Path.Circle(
+        bPathsStart[i] = SVGTag2Path.Rect(
           svgpath.centroid(d)[0],
           svgpath.centroid(d)[1],
-          (Math.sqrt(d.properties.value) / Math.PI) * 5
+          xScale.bandwidth() * 0.01,
+          (height + margin.top - yScale(d.properties.value)) * 0.01
         );
-        return cPaths[i];
+        // make a path out of the polygons:
+        pPaths[i] = svgpath(d);
+        return pPaths[i];
       });
     // add ToolTips:
     /* .on("mouseenter", function (d) {
-          const msg = `${d.properties.value}`; // ${d.properties.name}:
-          ToolTips.Show(msg);
-        })
-        .on("mousemove", function (d) {
-          ToolTips.Move(d3.event);
-        })
-        .on("mouseout", function () {
-          ToolTips.Hide();
-        }) */
+        const msg = `${d.properties.value}`; // ${d.properties.name}:
+        ToolTips.Show(msg);
+      })
+      .on("mousemove", function (d) {
+        ToolTips.Move(d3.event);
+      })
+      .on("mouseout", function () {
+        ToolTips.Hide();
+      }) */
 
     // create labels:
     const labelLayer = svg.append("g").attr("id", "labelLayer");
@@ -193,7 +208,7 @@ $(document).ready(function () {
       .attr("x", 0)
       .attr("y", 0)
       .attr("class", "labelText")
-      .attr("font-size", 13.5)
+      .attr("font-size", 11)
       .style("text-anchor", "middle")
       .text(function (d) {
         return d.properties.name;
@@ -203,17 +218,17 @@ $(document).ready(function () {
     const tweenIns = [];
     const tweenOuts = [];
     try {
-      for (let i = 0; i < cPaths.length; i++) {
+      for (let i = 0; i < pPaths.length; i++) {
         tweenIns[i] = KUTE.fromTo(
           `#elem${i}`,
-          { path: cPaths[i] },
+          { path: bPathsStart[i] },
           { path: bPaths[i] },
           { duration: 2000 }
         );
         tweenOuts[i] = KUTE.fromTo(
           `#elem${i}`,
           { path: bPaths[i] },
-          { path: cPaths[i] },
+          { path: pPaths[i] },
           { duration: 3000 }
         );
       }
@@ -242,12 +257,12 @@ $(document).ready(function () {
       y_axis_g.transition().duration(1000).style("opacity", 1);
 
       // run KUTE tweenIns:
-      for (var i = 0; i < cPaths.length; i++) {
+      for (var i = 0; i < pPaths.length; i++) {
         tweenIns[i].start();
       }
 
-      polyLayer.transition().duration(3000).style("opacity", 0);
-      labelLayer.transition().duration(3000).style("opacity", 0);
+      // polyLayer.transition().duration(500).style("opacity", 0);
+      labelLayer.transition().duration(1500).style("opacity", 0);
     });
   }
   drawMap();
