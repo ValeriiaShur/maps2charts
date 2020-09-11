@@ -116,7 +116,7 @@ $(document).ready(function () {
     var legend = d3
       .select("g")
       .append("g")
-      .attr("class", "quantize")
+      .attr("class", "legend")
       .attr("transform", "translate(70,-10)");
 
     var legendQuant = d3
@@ -124,7 +124,7 @@ $(document).ready(function () {
       .labelFormat(d3.format(".0f"))
       .scale(colorScale);
 
-    svg.select(".quantize").call(legendQuant);
+    svg.select(".legend").call(legendQuant);
 
     // create new svg paths:
     const polyLayer = svg.append("g").attr("id", "polyLayer");
@@ -242,8 +242,8 @@ $(document).ready(function () {
         tweenOuts[i] = KUTE.fromTo(
           `#elem${i}`,
           { path: bPaths[i] },
-          { path: pPaths[i] },
-          { duration: 3000 }
+          { path: bPathsStart[i] },
+          { duration: 2000 }
         );
       }
     } catch (e) {
@@ -255,7 +255,7 @@ $(document).ready(function () {
         .append("button")
         .text(text)
         .on("click", function () {
-          this.disabled = true;
+          // this.disabled = true;
           callback.call(this);
         });
     }
@@ -275,9 +275,29 @@ $(document).ready(function () {
         tweenIns[i].start();
       }
 
-      legend.transition().duration(900).style("opacity", 0);
+      legend.transition().duration(500).style("opacity", 0);
       polyLayer.transition().duration(500).style("opacity", 0);
-      labelLayer.transition().duration(1000).style("opacity", 0);
+      labelLayer.transition().duration(700).style("opacity", 0);
+    });
+
+    // --------------------------
+    //
+    // Tween to Choropleth
+    //
+    // --------------------------
+    addButton("Tween to Choropleth", function (d, i) {
+      // hide axis
+      x_axis_g.transition().duration(1000).style("opacity", 0);
+      y_axis_g.transition().duration(1000).style("opacity", 0);
+
+      // run KUTE tweenOuts:
+      for (let i = 0; i < pPaths.length; i++) {
+        tweenOuts[i].start();
+      }
+
+      polyLayer.transition().duration(2000).style("opacity", 1);
+      legend.transition().duration(2000).style("opacity", 1);
+      labelLayer.transition().duration(2000).style("opacity", 1);
     });
   }
   drawMap();

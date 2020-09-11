@@ -249,10 +249,10 @@ $(document).ready(function () {
 
     // --------------------------
     //
-    // Tween to Proportonal symbol map
+    // Tween to Choropleth
     //
     // --------------------------
-    addButton("Tween to Proportonal symbol", function () {
+    addButton("Tween to Choropleth", function () {
       // hide axis
       x_axis_g.transition().duration(3000).style("opacity", 0);
       y_axis_g.transition().duration(3000).style("opacity", 0);

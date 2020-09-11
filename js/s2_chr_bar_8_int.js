@@ -249,7 +249,7 @@ $(document).ready(function () {
         .append("button")
         .text(text)
         .on("click", function () {
-          this.disabled = true;
+          // this.disabled = true;
           callback.call(this);
         });
     }
@@ -272,6 +272,26 @@ $(document).ready(function () {
       legend.transition().duration(900).style("opacity", 0);
       polyLayer.transition().duration(500).style("opacity", 0);
       labelLayer.transition().duration(1000).style("opacity", 0);
+    });
+
+    // --------------------------
+    //
+    // Tween to Choropleth
+    //
+    // --------------------------
+    addButton("Tween to Choropleth", function (d, i) {
+      // hide axis
+      x_axis_g.transition().duration(1000).style("opacity", 0);
+      y_axis_g.transition().duration(1000).style("opacity", 0);
+
+      // run KUTE tweenOuts:
+      for (let i = 0; i < pPaths.length; i++) {
+        tweenOuts[i].start();
+      }
+
+      polyLayer.transition().duration(3000).style("opacity", 1);
+      legend.transition().duration(3000).style("opacity", 1);
+      labelLayer.transition().duration(3000).style("opacity", 1);
     });
   }
   drawMap();

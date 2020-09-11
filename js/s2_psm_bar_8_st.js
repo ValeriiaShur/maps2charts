@@ -107,12 +107,12 @@ $(document).ready(function () {
       .style("opacity", 0);
 
     // radius for legend
-    const radius = d3.scaleLinear().domain([0, 100]).range([0, 15]);
+    const radius = d3.scaleLinear().domain([0, 100]).range([2, 15]);
 
     var legend = svg
       .append("g")
       .attr("fill", "none")
-      .attr("transform", `translate(${width - 150},${height + 20})`)
+      .attr("transform", `translate(${width - 190},${height + 20})`)
       .attr("text-anchor", "middle")
       .style("font", "9px sans-serif")
       .selectAll("g")
@@ -122,23 +122,12 @@ $(document).ready(function () {
 
     legend
       .append("circle")
-      .attr("fill", function (d) {
-        if (d.data == 10) {
-          return "orange";
-        }
-        if (d.data == 50) {
-          return "green";
-        }
-        if (d.data == 100) {
-          return "yellow";
-        }
-      })
       .attr("fill-opacity", 0.5)
       .attr("stroke", "#ccc")
       .attr("cy", (d) => -radius(d))
       .attr("r", radius);
 
-    // Add legend: segments
+    // Add legend text
     legend
       .append("text")
       .attr("fill", "#ccc")
@@ -185,6 +174,7 @@ $(document).ready(function () {
 
     // create svg circles AS PATHS :
     const cPaths = []; // array for the paths, for later use in KUTE animation
+    const cPathsStart = [];
     const circleLayer = svg.append("g").attr("id", "circleLayer");
     circleLayer
       .selectAll("path")
@@ -198,6 +188,12 @@ $(document).ready(function () {
         return `elem${i}`;
       })
       .attr("d", function (d, i) {
+        cPathsStart[i] = SVGTag2Path.Circle(
+          xScale(d.properties.name) + xScale.bandwidth() / 2,
+          yScale(d.properties.value) +
+            (height - yScale(d.properties.value)) / 2,
+          (height - yScale(d.properties.value)) / 3
+        );
         bPathsStart[i] = SVGTag2Path.Rect(
           svgpath.centroid(d)[0],
           svgpath.centroid(d)[1],
@@ -262,7 +258,7 @@ $(document).ready(function () {
         );
         tweenOuts[i] = KUTE.fromTo(
           `#elem${i}`,
-          { path: bPaths[i] },
+          { path: cPathsStart[i] },
           { path: cPaths[i] },
           { duration: 3000 }
         );
@@ -276,7 +272,7 @@ $(document).ready(function () {
         .append("button")
         .text(text)
         .on("click", function () {
-          this.disabled = true;
+          // this.disabled = true;
           callback.call(this);
         });
     }
@@ -299,6 +295,26 @@ $(document).ready(function () {
       legend.transition().duration(3000).style("opacity", 0);
       labelLayer.transition().duration(3000).style("opacity", 0);
       polyLayer.transition().duration(3000).style("opacity", 0);
+    });
+
+    // --------------------------
+    //
+    // Tween to Proportonal symbol map
+    //
+    // --------------------------
+    addButton("Tween to Proportonal symbol", function () {
+      // hide axis
+      x_axis_g.transition().duration(3000).style("opacity", 0);
+      y_axis_g.transition().duration(3000).style("opacity", 0);
+
+      // run KUTE tweenOuts:
+      for (let i = 0; i < cPaths.length; i++) {
+        tweenOuts[i].start();
+      }
+
+      legend.transition().duration(4500).style("opacity", 1);
+      polyLayer.transition().duration(4500).style("opacity", 1);
+      labelLayer.transition().duration(4500).style("opacity", 1);
     });
   }
   drawMap();
