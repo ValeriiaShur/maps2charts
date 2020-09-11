@@ -107,12 +107,12 @@ $(document).ready(function () {
       .style("opacity", 0);
 
     // radius for legend
-    const radius = d3.scaleLinear().domain([0, 100]).range([0, 15]);
+    const radius = d3.scaleLinear().domain([0, 100]).range([4, 19, 35]);
 
     var legend = svg
       .append("g")
       .attr("fill", "none")
-      .attr("transform", `translate(${width - 150},${height + 20})`)
+      .attr("transform", `translate(${width - 190},${height + 20})`)
       .attr("text-anchor", "middle")
       .style("font", "9px sans-serif")
       .selectAll("g")
@@ -122,29 +122,18 @@ $(document).ready(function () {
 
     legend
       .append("circle")
-      .attr("fill", function (d) {
-        if (d.data == 10) {
-          return "orange";
-        }
-        if (d.data == 50) {
-          return "green";
-        }
-        if (d.data == 100) {
-          return "yellow";
-        }
-      })
       .attr("fill-opacity", 0.5)
       .attr("stroke", "#ccc")
       .attr("cy", (d) => -radius(d))
       .attr("r", radius);
 
-    // Add legend: segments
+    // Add legend text
     legend
       .append("text")
       .attr("fill", "#ccc")
       .attr("y", (d) => -2 * radius(d))
       .attr("dy", "0.8em")
-      .attr("dx", "2.5em")
+      .attr("dx", "2.8em")
       .text(d3.format(".1s"));
 
     // create new svg paths:

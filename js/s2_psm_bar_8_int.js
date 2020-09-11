@@ -107,7 +107,7 @@ $(document).ready(function () {
       .style("opacity", 0);
 
     // radius for legend
-    const radius = d3.scaleLinear().domain([0, 100]).range([2, 15]);
+    const radius = d3.scaleLinear().domain([0, 100]).range([4, 19, 35]);
 
     var legend = svg
       .append("g")
@@ -133,7 +133,7 @@ $(document).ready(function () {
       .attr("fill", "#ccc")
       .attr("y", (d) => -2 * radius(d))
       .attr("dy", "0.8em")
-      .attr("dx", "2.5em")
+      .attr("dx", "2.9em")
       .text(d3.format(".1s"));
 
     // create new svg paths:
