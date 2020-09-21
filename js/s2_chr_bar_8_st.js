@@ -163,6 +163,57 @@ $(document).ready(function () {
       });
     barsLayer.remove(); // clean up
 
+    const mapInBarProjections = [];
+    // var selection = d3.select("barsLayer"); 5.55, 52.05
+    var nodes = barsLayer.node().children;
+    const intersvgpaths = [];
+    const barCentersInMapProj = [
+      [6.5, 52.15],
+      [6.2, 52.05],
+      [5.9, 52.15],
+      [5.65, 52.1],
+      [5.4, 52.07],
+      [5.2, 52.18],
+      [4.9, 52.2],
+      [4.6, 52.15],
+    ];
+    for (let i = 0; i < nodes.length; i++) {
+      // var bbox = nodes[i].getBBox();
+      //console.log(bbox.x, bbox.width, bbox.y, bbox.height);
+      mapInBarProjections[i] = d3
+        .geoMercator()
+        //.center([bbox.x + bbox.width / 2, bbox.y + bbox.height / 2]) //6.7, 52
+        .center(barCentersInMapProj[i])
+        .scale(19000) //20000
+        .translate([width / 2, height / 2]);
+      intersvgpaths[i] = d3.geoPath().projection(mapInBarProjections[i]);
+    }
+
+    // create svg polygons of units AS PATHS :
+    const interpPaths = [];
+    const interChoroPoly = svg.append("g").attr("id", "interChoroPoly");
+    interChoroPoly
+      .selectAll("path")
+      // bind the data:
+      .data(state_features)
+      .enter()
+      // for each d create & draw a circle:
+      .append("path")
+      //.attr("class", "propChoroPoly")
+      .attr("fill", (d) => colorScale(d.properties.value))
+      .style("opacity", 0.9)
+      .style("stroke", "#bebdb8")
+      .attr("id", function (d, i) {
+        return `elem${i}`;
+      })
+      .attr("d", function (d, i) {
+        // make a path out of the polygons:
+        interpPaths[i] = intersvgpaths[i](d);
+        //debugger;
+        return interpPaths[i];
+      });
+    interChoroPoly.remove(); // clean up
+
     // create svg polygons of units AS PATHS :
     const pPaths = []; // array for the paths, for later use in KUTE animation
     const choroPoly = svg.append("g").attr("id", "choroPoly");
@@ -191,6 +242,12 @@ $(document).ready(function () {
         pPaths[i] = svgpath(d);
         return pPaths[i];
       });
+    /* .attr("d", function (d, i) {
+        // make a path out of the polygons:
+        interpPaths[i] = intersvgpaths[i](d);
+        //debugger;
+        return interpPaths[i];
+      }) */
     // add ToolTips:
     /* .on("mouseenter", function (d) {
         const msg = `${d.properties.value}`; // ${d.properties.name}:
@@ -231,6 +288,7 @@ $(document).ready(function () {
     // Create the array of KUTE tweens for in and out tweening:
     const tweenIns = [];
     const tweenOuts = [];
+    const tweenOutsInter = [];
     try {
       for (let i = 0; i < pPaths.length; i++) {
         tweenIns[i] = KUTE.fromTo(
@@ -242,8 +300,14 @@ $(document).ready(function () {
         tweenOuts[i] = KUTE.fromTo(
           `#elem${i}`,
           { path: bPaths[i] },
-          { path: bPathsStart[i] },
-          { duration: 2000 }
+          { path: interpPaths[i] },
+          { duration: 20 }
+        );
+        tweenOutsInter[i] = KUTE.fromTo(
+          `#elem${i}`,
+          { path: interpPaths[i] },
+          { path: pPaths[i] },
+          { duration: 3000 }
         );
       }
     } catch (e) {
@@ -292,12 +356,12 @@ $(document).ready(function () {
 
       // run KUTE tweenOuts:
       for (let i = 0; i < pPaths.length; i++) {
-        tweenOuts[i].start();
+        tweenOuts[i].start().chain(tweenOutsInter);
       }
 
-      polyLayer.transition().duration(2000).style("opacity", 1);
-      legend.transition().duration(2000).style("opacity", 1);
-      labelLayer.transition().duration(2000).style("opacity", 1);
+      polyLayer.transition().duration(4500).style("opacity", 1);
+      legend.transition().duration(3000).style("opacity", 1);
+      labelLayer.transition().duration(3000).style("opacity", 1);
     });
   }
   drawMap();

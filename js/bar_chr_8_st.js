@@ -168,9 +168,35 @@ $(document).ready(function () {
         ToolTips.Hide();
       }) */
 
+    const mapInBarProjections = [];
+    // var selection = d3.select("barsLayer");
+    var nodes = barsLayer.node().children;
+    const intersvgpaths = [];
+    const barCentersInMapProj = [
+      [7.25, 52.2],
+      [6.78, 52.35],
+      [7.2, 52.3],
+      [6.9, 52.25],
+      [6.7, 52.3],
+      [6.25, 52.3],
+      [5.8, 52.28],
+      [5.7, 52.35],
+    ];
+    for (let i = 0; i < nodes.length; i++) {
+      // var bbox = nodes[i].getBBox();
+      //console.log(bbox.x, bbox.width, bbox.y, bbox.height);
+      mapInBarProjections[i] = d3
+        .geoMercator()
+        //.center([bbox.x + bbox.width / 2, bbox.y + bbox.height / 2]) //6.7, 52
+        .center(barCentersInMapProj[i])
+        .scale(19000) //20000
+        .translate([width / 2, height / 2]);
+      intersvgpaths[i] = d3.geoPath().projection(mapInBarProjections[i]);
+    }
+
     // create svg polygons of units AS PATHS :
     const pPaths = []; // array for the paths, for later use in KUTE animation
-    const pPathsStart = [];
+    const interpPaths = [];
     const choroPoly = svg.append("g").attr("id", "choroPoly");
     choroPoly
       .selectAll("path")
@@ -187,6 +213,12 @@ $(document).ready(function () {
         // make a path out of the polygons:
         pPaths[i] = svgpath(d);
         return pPaths[i];
+      })
+      .attr("d", function (d, i) {
+        // make a path out of the polygons:
+        interpPaths[i] = intersvgpaths[i](d);
+        //debugger;
+        return interpPaths[i];
       });
 
     // create labels:
@@ -216,19 +248,20 @@ $(document).ready(function () {
     labelLayer.style("opacity", 0.01);
 
     // Create the array of KUTE tweens for in and out tweening:
-    const tweenIns = [];
+    // const tweenIns = [];
     const tweenOuts = [];
+    const tweenOutsInter = [];
     try {
       for (let i = 0; i < pPaths.length; i++) {
-        tweenIns[i] = KUTE.fromTo(
-          `#elem${i}`,
-          { path: pPaths[i] },
-          { path: bPaths[i] },
-          { duration: 3000 }
-        );
         tweenOuts[i] = KUTE.fromTo(
           `#elem${i}`,
           { path: bPaths[i] },
+          { path: interpPaths[i] },
+          { duration: 20 }
+        );
+        tweenOutsInter[i] = KUTE.fromTo(
+          `#elem${i}`,
+          { path: interpPaths[i] },
           { path: pPaths[i] },
           { duration: 3000 }
         );
@@ -259,7 +292,7 @@ $(document).ready(function () {
 
       // run KUTE tweenOuts:
       for (let i = 0; i < pPaths.length; i++) {
-        tweenOuts[i].start();
+        tweenOuts[i].start().chain(tweenOutsInter);
       }
 
       polyLayer
