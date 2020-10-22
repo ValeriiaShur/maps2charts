@@ -15,7 +15,6 @@ body {
 
 #container {
   margin-top: 2%;
-  /* height: 15%; */
   color: #4e4e4e;
 }
 
@@ -36,6 +35,11 @@ body {
   font-family: "Roboto";
 }
 
+#header {
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
 #back {
   padding: 15px;
   padding-left: 5px;
@@ -50,21 +54,12 @@ body {
 }
 
 #map {
-  /* width: 960px;
-  height: 500px; */
   display: block;
-  /* margin: 0 auto; */
   position: relative;
-  /* width: 70%; */
   overflow: hidden;
 }
 
-/* .svg-content-responsive {
-  display: inline-block;
-  position: absolute;
-} */
-
-/*added by BK for propPointMap:*/
+/*added by BK for propPointMap: { */
 .mapSVG {
   background-color: rgb(255, 255, 255);
 }
@@ -94,6 +89,8 @@ body {
   font-size: 0.8em;
   margin-bottom: 3px;
 }
+
+/* } */
 
 #buttons {
   width: 100%;
@@ -132,4 +129,17 @@ button {
 #footer > p {
   text-align: center;
   padding-top: 70px;
+}
+
+.div-center {
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+}
+
+ul {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 1em;
+  text-indent: -1em;
 }
